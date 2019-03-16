@@ -59,6 +59,57 @@ module.exports = {
             });
         });
     },
+    queryByName(req, res) {
+        pool.getConnection(function(err, connection) {
+            // 获取前台页面传过来的参数
+            let param = req.query || req.params;
+            // 建立连接 查询用户信息
+            connection.query(userSQL.getUserByName, [param.name], function(
+                err,
+                result
+            ) {
+                if (result) {
+                    result = {
+                        code: 200,
+                        msg: "查询成功",
+                        data: result[0]
+                    };
+                }
+
+                // 以json形式，把操作结果返回给前台页面
+                responseJSON(res, result);
+
+                // 释放连接
+                connection.release();
+            });
+        });
+    },
+    login(req, res, next) {
+        pool.getConnection(function(err, connection) {
+            // 建立连接 查询用户信息
+            connection.query(userSQL.getUserByName, [req.name], function(err, result) {
+                let responses = {
+                    code: 200,
+                    msg: "",
+                    data: false
+                };
+                if (result) {
+                    let data = result[0];
+                    if (data["user_password"] === req.password) {
+                        responses.msg = "验证通过";
+                        responses.data = true;
+                    } else {
+                        responses.msg = "密码错误";
+                    }
+                } else {
+                    responses.msg = "用户不存在";
+                }
+                responseJSON(res, responses);
+                // 释放连接
+                connection.release();
+            });
+        });
+    },
     insert(req, res, next) {
         pool.getConnection(function(err, connection) {
             // 获取前台页面传过来的参数
