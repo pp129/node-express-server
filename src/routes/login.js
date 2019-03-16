@@ -4,7 +4,7 @@ const router = express.Router();
 let db = require("../database/model");
 /* GET home page. */
 router.post('/login', function(req, res, next) {
-    let user_name = req.body.name;
+    let user_name = req.body.username;
     let password = req.body.password;
     let param = {
         name: user_name,

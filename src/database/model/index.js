@@ -87,13 +87,16 @@ module.exports = {
     login(req, res, next) {
         pool.getConnection(function(err, connection) {
             // 建立连接 查询用户信息
-            connection.query(userSQL.getUserByName, [req.name], function(err, result) {
+            connection.query(userSQL.getUserByName, [req.name], function(
+                err,
+                result
+            ) {
                 let responses = {
                     code: 200,
                     msg: "",
                     data: false
                 };
-                if (result) {
+                if (result && result.length > 0) {
                     let data = result[0];
                     if (data["user_password"] === req.password) {
                         responses.msg = "验证通过";
